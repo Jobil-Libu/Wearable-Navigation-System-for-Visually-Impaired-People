@@ -76,9 +76,9 @@ startup_manager.py  →  launches vision.py and ultrasonic.py as independent
    ```
 4. Run:
    ```bash
-   python src/startup_manager.py
+   python AssistiveTech/startup_manager.py
    ```
-   This handles the full boot sequence — camera/serial checks, then launches `vision.py` and `ultrasonic.py`.
+
 
 ## Known issues / TODO
 
