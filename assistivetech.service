@@ -1,0 +1,29 @@
+[Unit]
+Description=Assistive Tech - Smart Cane Companion (startup_manager.py)
+# Wait for basic system + sound to be ready before starting
+After=multi-user.target sound.target
+Wants=sound.target
+
+[Service]
+Type=simple
+
+# Matches the hardcoded paths in startup_manager.py / ultrasonic.py / vision.py
+User=pi4
+WorkingDirectory=/home/pi4/Desktop/AssistiveTech
+ExecStart=/home/pi4/yolo-env/bin/python3 /home/pi4/Desktop/AssistiveTech/startup_manager.py
+
+# Needed so paplay/pygame can reach the user's PulseAudio session
+# when this runs as a system service instead of a login shell.
+# Confirm the UID with: id -u pi4
+Environment=XDG_RUNTIME_DIR=/run/user/1000
+
+# Auto-restart if it crashes (e.g. the USB voltage-drop issue in the README)
+Restart=on-failure
+RestartSec=5
+
+# Send stdout/stderr to the journal so `journalctl -u assistivetech.service -f` works
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
