@@ -2,9 +2,13 @@
 
 A wearable, AI-assisted navigation aid for visually impaired users. Ultrasonic head-level obstacle detection, a hand-held vision camera, and real-time audio feedback — all run off a belt-mounted Raspberry Pi.
 
-**[View the interactive hardware guide →](docs/hardware-guide.html)** (open locally, or enable GitHub Pages — see below)
+<p align="center">
+  <img src="docs/demo.gif" alt="Interactive hardware guide preview — hover states cycling through each module" width="420">
+</p>
 
-![Prototype](docs/preview.png)
+<p align="center">
+  <b><a href="docs/hardware-guide.html">▶ Open the live interactive guide</a></b> — hover any module for its description (GitHub can't run the real hover interaction inside this README, so the GIF above is a recorded preview; the linked file/page is fully interactive)
+</p>
 
 ## How it works
 
@@ -20,7 +24,7 @@ A wearable, AI-assisted navigation aid for visually impaired users. Ultrasonic h
 ```
 .
 ├── docs/
-│   └── hardware-guide.html   # self-contained interactive hotspot diagram
+│   └── hardware-guide.html 
 ├── LICENSE
 └── README.md
 ```
