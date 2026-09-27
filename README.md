@@ -7,7 +7,7 @@ A wearable, AI-assisted navigation aid for visually impaired users. Ultrasonic h
 </p>
 
 <p align="center">
-  <b><a href="docs/hardware-guide.html">▶ Open the live interactive guide</a></b> — hover any module for its description (GitHub can't run the real hover interaction inside this README, so the GIF above is a recorded preview; the linked file/page is fully interactive)
+  <b><a href="https://jobil-libu.github.io/Wearable-Navigation-System-for-Visually-Impaired-People/">▶ Open the live interactive guide</a></b>
 </p>
 
 ## How it works
