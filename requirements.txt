@@ -1,0 +1,17 @@
+# Core inference
+ultralytics          # YOLOv8 / NCNN inference
+numpy
+
+# Camera / vision
+opencv-python
+
+# Sensor comms
+pyserial             # ESP32 <-> Pi serial link
+
+# Audio
+pygame               # spatial/multi-channel beep mixing
+# System also requires the `paplay` CLI (from pulseaudio-utils) for voice alerts —
+# install via: sudo apt install pulseaudio-utils
+
+# GPIO (tactile button)
+RPi.GPIO             # use rpi-lgpio instead on Raspberry Pi OS Bookworm 64-bit if RPi.GPIO fails to install
