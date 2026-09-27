@@ -1,17 +1,25 @@
 # Core inference
 ultralytics          # YOLOv8 / NCNN inference
 numpy
-
+ 
 # Camera / vision
 opencv-python
-
+ 
 # Sensor comms
 pyserial             # ESP32 <-> Pi serial link
-
+ 
 # Audio
 pygame               # spatial/multi-channel beep mixing
 # System also requires the `paplay` CLI (from pulseaudio-utils) for voice alerts —
 # install via: sudo apt install pulseaudio-utils
-
+ 
+# Text-to-speech for boot announcements — NOT a pip package.
+# startup_manager.py calls a local Piper TTS binary + a .onnx voice model directly:
+#   PIPER_BINARY = /home/pi4/piper/piper
+#   MODEL_PATH   = /home/pi4/model/voice.onnx
+# Download a prebuilt binary + voice from https://github.com/rhasspy/piper
+# and place them at those paths (or edit the constants at the top of
+# startup_manager.py to match wherever you put them).
+ 
 # GPIO (tactile button)
 RPi.GPIO             # use rpi-lgpio instead on Raspberry Pi OS Bookworm 64-bit if RPi.GPIO fails to install
