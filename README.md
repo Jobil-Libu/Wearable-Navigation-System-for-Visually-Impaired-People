@@ -3,7 +3,7 @@
 An AI-powered, fully offline wearable navigation aid for visually impaired users. It fuses real-time object detection with head-level ultrasonic proximity sensing, and delivers feedback through spatial audio beeps and voice alerts — hands-free, low-latency, and running entirely on edge hardware with no cloud dependency.
 
 <p align="center">
-  <img src="docs/circuit-diagram.png" alt="Interactive hardware guide preview — hover states cycling through each module" width="420">
+  <img src="docs/demo.gif" alt="Interactive hardware guide preview — hover states cycling through each module" width="420">
 </p>
 
 <p align="center">
