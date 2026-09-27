@@ -47,6 +47,15 @@ startup_manager.py  →  launches vision.py and ultrasonic.py as independent
                              spatial beeps via pygame. Auto-reconnects on
                              dropped USB serial (try/except loop).
 ```
+`startup_manager.py` does more than just launch things — it's a real boot sequence:
+
+1. Waits 5s, then speaks **"System initializing"** via a local **Piper TTS** engine (`/home/pi4/piper/piper` + a `.onnx` voice model) — output is synthesized to `/dev/shm/startup_msg.wav` (RAM-disk, for instant playback) and played with `paplay`.
+2. Polls for the ESP32 (`/dev/ttyUSB*` / `/dev/ttyACM*`), repeating **"Connect Sensors"** every 4s until found, then confirms **"Sensors Connected"**.
+3. Looks for a camera: a physical USB camera at `/dev/video0` first, otherwise a phone IP camera reached via the network gateway (`192.168.x.x:8080/video`) — repeating **"Connect Camera"** until one is found, then announces which kind.
+4. Speaks **"Starting Navigation"**, then launches `vision.py` and `ultrasonic.py` as subprocesses, passing the camera source and ESP32 serial port to them as arguments.
+
+> ⚠️ `VENV_PYTHON`, `APP_FOLDER`, `PIPER_BINARY`, and `MODEL_PATH` are hardcoded as absolute paths at the top of `startup_manager.py` (currently `/home/pi4/...`). If you ever deploy under a different username or folder, those constants need editing too — they won't pick up `assistivetech.service`'s `WorkingDirectory` automatically.
+
 ### ESP32 firmware (`esp32/ultrasonic_headband/`)
 
 Runs independently of the Pi — polls the 3 headband ultrasonic sensors in a loop and streams the readings over USB serial for `ultrasonic.py` to consume.
@@ -71,8 +80,26 @@ Runs independently of the Pi — polls the 3 headband ultrasonic sensors in a lo
 
 ### Audio system
 
-- `AssistiveTech/sounds/` — per-hazard spoken alerts as `.wav` files (e.g. `Stairs.wav`, `Vehicle.wav`, `Door.wav`, `P-left.wav`, `System Ready.wav`), played via the Linux `paplay` command from `vision.py`. New hazard → speaks immediately; same hazard → enforced >3.5s cooldown before repeating, to avoid nagging.
-- `alert.mp3` / `beep.mp3` — general alert/proximity beep pair, used by `ultrasonic.py`/`vision.py` outside the per-hazard `.wav` set. These spatial beeps are panned Left/Center/Right via `pygame`, based on which ultrasonic sensor is closest to an obstacle.
+Three separate audio mechanisms run side by side:
+
+1. **Boot announcements — Piper TTS.** `startup_manager.py` synthesizes short status lines ("System initializing", "Connect Sensors", "Sensors Connected", "Connect Camera", "USB/Phone Camera Found", "Starting Navigation") on the fly with a local Piper voice model, rather than pre-recorded files.
+
+2. **Per-hazard spoken alerts — `AssistiveTech/sounds/`.** `vision.py` maps each detection directly to a `.wav` file via an `AUDIO_MAP` dict, played with `paplay`:
+
+   | Detection | Sound file |
+   |---|---|
+   | Stairs Ahead | `Stairs.wav` |
+   | Vehicle Ahead | `Vehicle.wav` |
+   | Door Ahead | `Door.wav` |
+   | Crowd ahead (>3 people) | `Crowd ahead.wav` |
+   | Person left | `P-left.wav` |
+   | Person right | `P-right.wav` |
+   | Person ahead | `P-ahead.wav` |
+   | System Ready | `System Ready.wav` |
+
+   Detections are ranked by priority (hazard > navigation > info) and only the top one is spoken per frame. A message repeats only if it's new (>2.5s since the last one) or the same one has been silent for >3.5s — so it won't nag, but also won't go silent for long.
+
+3. **Continuous spatial proximity beeps — `alert.mp3` / `beep.mp3`.** `ultrasonic.py` loops these on separate pygame channels rather than firing one-shot beeps: `alert.mp3` on the **left/right** channels, `beep.mp3` on the **center** channel. Volume is a smoothed, distance-based curve (median-filtered over 5 samples, capped at 35%, decaying gradually rather than snapping) — and when something is dead ahead, the side channels are automatically ducked to 20% volume so a center-priority hazard doesn't get drowned out by side noise.
 
 
 ## Setup & run
@@ -119,9 +146,15 @@ kill <pid>
 ```
 
 
-## Known issues / TODO
+## Known issues
 
 - **Power/USB instability:** running the Pi CPU at max load alongside a USB camera and the ESP32 can cause brief voltage drops → split-second USB disconnects. `ultrasonic.py`'s serial reconnect loop handles this, but a more robust power supply (or powered USB hub) would reduce how often it triggers.
+
+> [!WARNING]
+> **Custom Path Configuration Required**
+> This codebase currently uses absolute directory paths tailored to the original Raspberry Pi development environment
+> 
+> Before executing the system on your own hardware, you **must** open the configuration sections at the top of `vision.py` and `startup_manager.py` and update the paths to match your local file structure. Failure to do so will result in missing file errors for the AI models and audio clips.
 
 ## License
 
