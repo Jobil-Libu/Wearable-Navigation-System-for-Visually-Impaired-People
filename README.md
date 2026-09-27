@@ -7,7 +7,7 @@ An AI-powered, fully offline wearable navigation aid for visually impaired users
 </p>
 
 <p align="center">
-  <b><a href="docs/hardware-guide.html">▶ Open the interactive hardware guide</a></b>
+  <b><a href="https://jobil-libu.github.io/Wearable-Navigation-System-for-Visually-Impaired-People">▶ Open the interactive hardware guide</a></b>
 </p>
 
 ## Hardware
