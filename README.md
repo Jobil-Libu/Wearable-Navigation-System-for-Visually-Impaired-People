@@ -21,6 +21,13 @@ An AI-powered, fully offline wearable navigation aid for visually impaired users
 
 The ESP32 talks to the Pi over **USB serial**.
 
+## Circuit diagram
+
+<p align="center">
+  <img src="docs/circuit-diagram.png" alt="Circuit diagram — ESP32, ultrasonic sensors, Raspberry Pi 4, camera, and audio wiring" width="600">
+</p>
+
+
 ## Software architecture
 
 Multi-process by design, so the AI workload never blocks real-time sensor polling:
@@ -50,10 +57,8 @@ startup_manager.py  →  launches vision.py and ultrasonic.py as independent
 
 ### Audio system
 
-- `alert.mp3` — spoken/hazard alert, triggered by `vision.py` on a new detected hazard, with a >3.5s cooldown before repeating the same hazard (prevents nagging)
-- `beep.mp3` & `alert.mp3` — spatial proximity beep, triggered by `ultrasonic.py`, panned Left/Center/Right based on which sensor is closest to an obstacle
-
-> Earlier planning discussed a richer set of per-hazard `.wav` files (`Stairs.wav`, `Vehicle.wav`, `Door.wav`, `P-left.wav`, `System Ready.wav`) played via `paplay` for lower decoding overhead. The current build on the Pi uses the two generic files above — update this section if that's changed since.
+- `AssistiveTech/sounds/` — per-hazard spoken alerts as `.wav` files (e.g. `Stairs.wav`, `Vehicle.wav`, `Door.wav`, `P-left.wav`, `System Ready.wav`), played via the Linux `paplay` command from `vision.py`. New hazard → speaks immediately; same hazard → enforced >3.5s cooldown before repeating, to avoid nagging.
+- `alert.mp3` / `beep.mp3` — general alert/proximity beep pair, used by `ultrasonic.py`/`vision.py` outside the per-hazard `.wav` set. These spatial beeps are panned Left/Center/Right via `pygame`, based on which ultrasonic sensor is closest to an obstacle.
 
 
 ## Setup & run
