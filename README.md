@@ -78,6 +78,31 @@ startup_manager.py  →  launches vision.py and ultrasonic.py as independent
    ```bash
    python AssistiveTech/startup_manager.py
    ```
+## Running automatically on boot (systemd service)
+
+`startup_manager.py` is set up to launch on every boot via a systemd service, `assistivetech.service`.
+
+**Install it (one-time setup):**
+```bash
+sudo cp assistivetech.service /etc/systemd/system/assistivetech.service
+sudo systemctl daemon-reload
+sudo systemctl enable assistivetech.service   # start on every future boot
+sudo systemctl start assistivetech.service    # start it right now
+```
+> Before installing, open `assistivetech.service` and edit the `User`, `WorkingDirectory`, and `ExecStart` lines to match where the repo actually lives on your Pi (and the venv path if it's not `yolo-env`).
+
+**Day-to-day commands:**
+```bash
+# Watch live logs to confirm it's running on boot
+sudo journalctl -u assistivetech.service -f
+
+# Stop it immediately
+sudo systemctl stop assistivetech.service
+
+# Check the Python process directly / kill it by hand if needed
+ps aux | grep startup_manager.py
+kill <pid>
+```
 
 
 ## Known issues / TODO
