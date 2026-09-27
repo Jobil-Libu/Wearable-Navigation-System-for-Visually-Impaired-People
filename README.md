@@ -24,7 +24,7 @@ The ESP32 talks to the Pi over **USB serial**.
 ## Circuit diagram
 
 <p align="center">
-  <img src="docs/circuit-diagram.png" alt="Circuit diagram — ESP32, ultrasonic sensors, Raspberry Pi 4, camera, and audio wiring" width="600">
+  <img src="docs/circuit-diagram.png" alt="Circuit diagram — ESP32, ultrasonic sensors, Raspberry Pi 4, camera, and audio wiring" width="900">
 </p>
 
 
