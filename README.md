@@ -14,7 +14,7 @@ An AI-powered, fully offline wearable navigation aid for visually impaired users
 
 | Module | Hardware | Placement | Purpose |
 |---|---|---|---|
-| **Headband** | 3× ultrasonic sensors (1 front, 2 side) + ESP32 | Worn on the head | Sweeps exactly where the user is looking, for immediate head-level obstacle awareness |
+| **Headband** | 3× ultrasonic sensors (1 front, 2 side) + ESP32 | Worn on the head | Sweeps exactly where the user is looking, for immediate head-level obstacle awareness — firmware in [`esp32/ultrasonic_headband/`](esp32/ultrasonic_headband/) |
 | **Camera** | USB webcam (or smartphone IP camera, `192.168.1.x:8080/video`) | Chest-mounted / hand-held | Stable, hands-free field of view for the vision pipeline |
 | **Belt pouch** | Raspberry Pi 4 + power bank (min. 5V/3A) | Worn on the belt | Headless main hub — runs AI inference and audio mixing; powers the camera and ESP32 |
 | **Audio out** | Earphones / Bluetooth headphones | In-ear | Voice alerts and spatial proximity beeps |
@@ -47,6 +47,20 @@ startup_manager.py  →  launches vision.py and ultrasonic.py as independent
                              spatial beeps via pygame. Auto-reconnects on
                              dropped USB serial (try/except loop).
 ```
+### ESP32 firmware (`esp32/ultrasonic_headband/`)
+
+Runs independently of the Pi — polls the 3 headband ultrasonic sensors in a loop and streams the readings over USB serial for `ultrasonic.py` to consume.
+
+| Sensor | Trig pin | Echo pin |
+|---|---|---|
+| Left | GPIO 5 | GPIO 18 |
+| Center | GPIO 21 | GPIO 22 |
+| Right | GPIO 19 | GPIO 23 |
+
+- Each sensor is read with a standard trigger/echo pulse (`pulseIn`, 30ms timeout); a timed-out read reports `400` (treated as "nothing in range").
+- A 15ms settle delay between each of the 3 reads prevents cross-talk/echo interference between sensors.
+- Every loop, it sends one CSV line over serial: `L,C,R` (distances in cm), at **115200 baud** — this is the exact format `ultrasonic.py` parses on the Pi side.
+
 
 ### The ML model
 
